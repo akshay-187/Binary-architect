@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "project": "PatchPilot-Python",
+  "last_run": null,
+  "summary": {
+    "total_issues": 1,
+    "evaluated": 0,
+    "passed": 0,
+    "failed": 0,
+    "pass_rate_pct": 0.0
+  },
+  "metrics": {
+    "avg_diagnosis_time_sec": 0.0,
+    "avg_patch_synthesis_time_sec": 0.0,
+    "avg_token_usage": 0
+  },
+  "runs": []
+}
