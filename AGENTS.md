@@ -1,40 +1,57 @@
-# IBM Bob Agent Directives (AGENTS.md)
+# AGENTS.md
 
-Welcome, IBM Bob. This document defines the product purpose, operational commands, and strict workflow rules governing autonomous operations within **PatchPilot-Python**.
+PatchPilot is an IBM Bob-powered issue-to-tested-patch workflow. It takes a bug
+report describing an issue in a target repository and produces a root-cause
+explanation, a minimal code patch, a regression test, a validation result, and
+a review-ready report — passing through three human approval gates along the
+way (plan approval, patch approval, report approval).
 
----
+## Ground rules (READ FIRST)
 
-## 🎯 Product Purpose
+1. Read `docs/PROJECT_MAP.md` before exploring the codebase.
+2. Read `logs/session-state.md` before starting any new work.
+3. Never modify files outside the current task's stated scope.
+4. Never weaken, skip, or delete a test to make it pass.
+5. Every bug fix ships with a regression test.
+6. Update `logs/session-state.md` before ending a session.
 
-**PatchPilot-Python** is an autonomous code repair and evaluation platform powered by **IBM Bob**. Its mission is to ingest broken Python repositories, analyze the root cause of reported issues, synthesize localized reproduction tests, propose surgical patches, verify fixes against all test suites, and generate comprehensive audit reports.
+## Repository map
 
----
+| Path | Purpose |
+|------|---------|
+| `sample_repository/` | Target FastAPI app that Bob analyses and fixes |
+| `app.py` | PatchPilot Streamlit UI entry point |
+| `main.py` | PatchPilot CLI entry point |
+| `analyser.py` | Issue analysis / root-cause logic |
+| `ai_review.py` | AI-assisted review logic |
+| `rules.py` | Rule definitions used by the pipeline |
+| `report.py` | Review-ready report generation |
+| `benchmark/` | Benchmark issues and evaluation results |
+| `bob_sessions/` | Exported IBM Bob session reports |
+| `docs/` | Project documentation |
+| `logs/` | Session state and development log |
 
-## ⌨️ Essential Commands
+## Commands
 
 | Command | Purpose |
-| :--- | :--- |
-| `streamlit run app.py` | Launch the PatchPilot interactive web dashboard |
-| `python main.py --repo <path> --issue <path>` | Run the full CLI analysis, patch, and test cycle |
-| `pytest sample_repository/test_app.py` | Run sample repository verification tests |
-| `pytest tests/` | Execute PatchPilot-Python test suites |
-| `python analyser.py <path>` | Perform standalone static/AST analysis of a repository |
+|---------|---------|
+| `streamlit run app.py` | Launch the PatchPilot UI |
+| `pytest` | Run the test suite |
+| `python main.py --issue <path>` | Run the pipeline against an issue file |
 
----
+## Where to look
 
-## 📜 The 5 Strict Workflow Rules for IBM Bob
+| Intent | File |
+|--------|------|
+| Architecture | `docs/ARCHITECTURE.md` |
+| File locations | `docs/PROJECT_MAP.md` |
+| Terminology | `docs/GLOSSARY.md` |
+| Past decisions | `docs/DECISIONS.md` |
+| Resume a session | `logs/session-state.md` |
+| Style conventions | `docs/CONVENTIONS.md` |
 
-### Rule 1: Strict Red-to-Green Test Cycle
-Before modifying any application source code, IBM Bob must always locate or construct a targeted reproduction test demonstrating the bug in a failing state (Red). A proposed patch is considered valid only when the reproduction test passes (Green) without causing regression.
+## Rules and commands
 
-### Rule 2: Minimal & Surgical Patching
-Propose the most concise, targeted fix directly addressing the failure root cause. Do not refactor unrelated code, reformat files arbitrarily, or introduce speculative abstractions or unneeded dependencies.
-
-### Rule 3: Comprehensive Regression Verification
-Every patch must be verified by running the entire existing test suite in addition to the newly authored reproduction test. If any regression occurs, Bob must iterate or roll back immediately.
-
-### Rule 4: Structured Auditing & Reporting
-All actions, diagnostic hypotheses, code diffs, and test outcomes must be documented in a structured markdown report via `report.py` and persisted in `bob_sessions/`. Benchmark metrics must update `benchmark/evaluation-results.json`.
-
-### Rule 5: Zero Secrets & Safe Environment Hygiene
-Never write or log plain API keys, secrets, or tokens. Preserve all git history and branch integrity. Never perform destructive git commands (`git reset --hard`, unauthorized push, etc.) without explicit approval.
+Always-on guardrails live in `.bob/rules/`. Mode-specific rules live in
+`.bob/rules-plan/`, `.bob/rules-code/`, and `.bob/rules-ask/`. Slash commands
+live in `.bob/commands/`.
